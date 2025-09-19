@@ -1,14 +1,15 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Layout from './components/common/Layout';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Login from './components/auth/Login';
-import Dashboard from './pages/Dashboard';
-import UserList from './components/users/UserList';
-import RoleList from './components/roles/RoleList';
-import PrivilegeList from './components/privileges/PrivilegeList';
-import UnidadList from './components/unidades/UnidadList';
+import BitacoraList from './components/bitacora/BitacoraList';
+import Layout from './components/common/Layout';
 import CuotaList from './components/cuotas/CuotaList';
+import PrivilegeList from './components/privileges/PrivilegeList';
+import RoleList from './components/roles/RoleList';
+import UnidadList from './components/unidades/UnidadList';
+import UserList from './components/users/UserList';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Dashboard from './pages/Dashboard';
+
 
 
 function ProtectedRoute({ children }) {
@@ -77,6 +78,16 @@ function AppRoutes() {
             <Layout>
               <CuotaList />
             </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bitacora"
+        element={
+          <ProtectedRoute>
+           <Layout>
+             <BitacoraList />
+           </Layout>
           </ProtectedRoute>
         }
       />

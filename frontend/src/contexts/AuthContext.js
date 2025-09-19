@@ -1,6 +1,7 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { authService } from '../services/authService';
 
+import api from '../services/api';
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -45,18 +46,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
-    try {
-      await authService.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      setCurrentUser(null);
+const logout = async () => {
+  try {
+    const refresh = localStorage.getItem('refresh_token');
+    if (refresh) {
+      await api.post('auth/logout/', { refresh }); // también acepta { refresh_token: refresh }
     }
-  };
-
+  } catch (e) {
+    // opcional: console.warn('Logout server error', e);
+  } finally {
+    // limpia estado y tokens
+    setCurrentUser(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+  }
+};
   const value = {
     currentUser,
     login,

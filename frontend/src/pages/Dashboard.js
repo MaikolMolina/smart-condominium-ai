@@ -1,19 +1,18 @@
-import React from 'react';
 import {
-  Grid,
-  Paper,
-  Typography,
+  Home as HomeIcon,
+  Lock as LockIcon,
+  AttachMoney as MoneyIcon,
+  People as PeopleIcon,
+  Security as SecurityIcon
+} from '@mui/icons-material';
+import {
   Box,
   Card,
-  CardContent
+  CardContent,
+  Grid,
+  Paper,
+  Typography
 } from '@mui/material';
-import {
-  People as PeopleIcon,
-  Lock as LockIcon,
-  Security as SecurityIcon,
-  Home as HomeIcon,
-  AttachMoney as MoneyIcon
-} from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
