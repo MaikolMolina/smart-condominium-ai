@@ -21,10 +21,11 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
-  AttachMoney as MoneyIcon
+  //AttachMoney as MoneyIcon
 } from '@mui/icons-material';
 import { cuotaService } from '../../services/cuotaService';
 import { unidadService } from '../../services/unidadService';
+import { usePrivileges } from '../../hooks/usePrivileges';
 
 const CuotaList = () => {
   const [cuotas, setCuotas] = useState([]);
@@ -40,6 +41,7 @@ const CuotaList = () => {
     estado: 'pendiente'
   });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const { tienePrivilegio } = usePrivileges();
 
   const showSnackbar = useCallback((message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -156,13 +158,15 @@ const CuotaList = () => {
         <Typography variant="h4" gutterBottom>
           Gestión de Cuotas y Expensas
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-        >
-          Nueva Cuota
-        </Button>
+        {tienePrivilegio('fees.create') && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialog()}
+          >
+            Nueva Cuota
+          </Button>
+        )}
       </Box>
 
       <Grid container spacing={3}>
@@ -191,20 +195,24 @@ const CuotaList = () => {
                     />
                   </Box>
                   <Box>
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => handleOpenDialog(cuota)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDelete(cuota.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    {tienePrivilegio('fees.edit') && (
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleOpenDialog(cuota)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
+                    {tienePrivilegio('fees.delete') && (
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(cuota.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Box>
                 </Box>
               </CardContent>
@@ -213,93 +221,95 @@ const CuotaList = () => {
         ))}
       </Grid>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {editingCuota ? 'Editar Cuota' : 'Crear Cuota'}
-        </DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-              <TextField
-                label="Unidad Habitacional"
-                name="unidad_habitacional"
-                value={formData.unidad_habitacional}
-                onChange={handleChange}
-                select
-                required
-                fullWidth
-              >
-                {unidades.map((unidad) => (
-                  <MenuItem key={unidad.id} value={unidad.id}>
-                    {unidad.torre} - {unidad.piso} - {unidad.numero}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                label="Monto"
-                name="monto"
-                type="number"
-                value={formData.monto}
-                onChange={handleChange}
-                required
-                fullWidth
-                inputProps={{ step: "0.01" }}
-              />
-              <TextField
-                label="Tipo"
-                name="tipo"
-                value={formData.tipo}
-                onChange={handleChange}
-                select
-                required
-                fullWidth
-              >
-                <MenuItem value="ordinaria">Ordinaria</MenuItem>
-                <MenuItem value="extraordinaria">Extraordinaria</MenuItem>
-                <MenuItem value="multa">Multa</MenuItem>
-              </TextField>
-              <TextField
-                label="Fecha de Vencimiento"
-                name="fecha_vencimiento"
-                type="date"
-                value={formData.fecha_vencimiento}
-                onChange={handleChange}
-                required
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-              />
-              <TextField
-                label="Estado"
-                name="estado"
-                value={formData.estado}
-                onChange={handleChange}
-                select
-                required
-                fullWidth
-              >
-                <MenuItem value="pendiente">Pendiente</MenuItem>
-                <MenuItem value="pagada">Pagada</MenuItem>
-                <MenuItem value="vencida">Vencida</MenuItem>
-              </TextField>
-              <TextField
-                label="Descripción"
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleChange}
-                multiline
-                rows={3}
-                fullWidth
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancelar</Button>
-            <Button type="submit" variant="contained">
-              {editingCuota ? 'Actualizar' : 'Crear'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      {tienePrivilegio('fees.create') || tienePrivilegio('fees.edit') ? (
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+          <DialogTitle>
+            {editingCuota ? 'Editar Cuota' : 'Crear Cuota'}
+          </DialogTitle>
+          <form onSubmit={handleSubmit}>
+            <DialogContent>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                <TextField
+                  label="Unidad Habitacional"
+                  name="unidad_habitacional"
+                  value={formData.unidad_habitacional}
+                  onChange={handleChange}
+                  select
+                  required
+                  fullWidth
+                >
+                  {unidades.map((unidad) => (
+                    <MenuItem key={unidad.id} value={unidad.id}>
+                      {unidad.torre} - {unidad.piso} - {unidad.numero}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  label="Monto"
+                  name="monto"
+                  type="number"
+                  value={formData.monto}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  inputProps={{ step: "0.01" }}
+                />
+                <TextField
+                  label="Tipo"
+                  name="tipo"
+                  value={formData.tipo}
+                  onChange={handleChange}
+                  select
+                  required
+                  fullWidth
+                >
+                  <MenuItem value="ordinaria">Ordinaria</MenuItem>
+                  <MenuItem value="extraordinaria">Extraordinaria</MenuItem>
+                  <MenuItem value="multa">Multa</MenuItem>
+                </TextField>
+                <TextField
+                  label="Fecha de Vencimiento"
+                  name="fecha_vencimiento"
+                  type="date"
+                  value={formData.fecha_vencimiento}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  label="Estado"
+                  name="estado"
+                  value={formData.estado}
+                  onChange={handleChange}
+                  select
+                  required
+                  fullWidth
+                >
+                  <MenuItem value="pendiente">Pendiente</MenuItem>
+                  <MenuItem value="pagada">Pagada</MenuItem>
+                  <MenuItem value="vencida">Vencida</MenuItem>
+                </TextField>
+                <TextField
+                  label="Descripción"
+                  name="descripcion"
+                  value={formData.descripcion}
+                  onChange={handleChange}
+                  multiline
+                  rows={3}
+                  fullWidth
+                />
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cancelar</Button>
+              <Button type="submit" variant="contained">
+                {editingCuota ? 'Actualizar' : 'Crear'}
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+      ) : null}
 
       <Snackbar
         open={snackbar.open}

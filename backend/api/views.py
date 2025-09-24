@@ -8,6 +8,8 @@ from .models import User, UnidadHabitacional, Rol, Privilegio, RolPrivilegio, Cu
 from .serializers import (UserSerializer, LoginSerializer, 
                          UnidadHabitacionalSerializer, RolSerializer, 
                          PrivilegioSerializer, RolPrivilegioSerializer, CuotaSerializer)
+from .permissions import TienePrivilegio
+
 
 class AuthViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
@@ -39,22 +41,83 @@ class AuthViewSet(viewsets.ViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, TienePrivilegio]
+    
+    def get_privilegio_requerido(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return 'users.view'
+        elif self.action == 'create':
+            return 'users.create'
+        elif self.action == 'update' or self.action == 'partial_update':
+            return 'users.edit'
+        elif self.action == 'destroy':
+            return 'users.delete'
+        return None
+        
+    def get_permissions(self):
+        # Asignar el privilegio requerido a la vista
+        self.privilegio_requerido = self.get_privilegio_requerido()
+        return super().get_permissions()
 
 class UnidadHabitacionalViewSet(viewsets.ModelViewSet):
     queryset = UnidadHabitacional.objects.all()
     serializer_class = UnidadHabitacionalSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, TienePrivilegio]
+    
+    def get_privilegio_requerido(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return 'units.view'
+        elif self.action == 'create':
+            return 'units.create'
+        elif self.action == 'update' or self.action == 'partial_update':
+            return 'units.edit'
+        elif self.action == 'destroy':
+            return 'units.delete'
+        return None
+        
+    def get_permissions(self):
+        self.privilegio_requerido = self.get_privilegio_requerido()
+        return super().get_permissions()
 
 class RolViewSet(viewsets.ModelViewSet):
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, TienePrivilegio]
+    
+    def get_privilegio_requerido(self):
+        if self.action in ['list', 'retrieve']:
+            return 'roles.view'
+        elif self.action == 'create':
+            return 'roles.create'
+        elif self.action in ['update', 'partial_update']:
+            return 'roles.edit'
+        elif self.action == 'destroy':
+            return 'roles.delete'
+        return None
+
+    def get_permissions(self):
+        self.privilegio_requerido = self.get_privilegio_requerido()
+        return super().get_permissions()
 
 class PrivilegioViewSet(viewsets.ModelViewSet):
     queryset = Privilegio.objects.all()
     serializer_class = PrivilegioSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, TienePrivilegio]
+    
+    def get_privilegio_requerido(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return 'privileges.view'
+        elif self.action == 'create':
+            return 'privileges.create'
+        elif self.action == 'update' or self.action == 'partial_update':
+            return 'privileges.edit'
+        elif self.action == 'destroy':
+            return 'privileges.delete'
+        return None
+        
+    def get_permissions(self):
+        self.privilegio_requerido = self.get_privilegio_requerido()
+        return super().get_permissions()
 
 class RolPrivilegioViewSet(viewsets.ModelViewSet):
     queryset = RolPrivilegio.objects.all()
@@ -113,12 +176,19 @@ class RolPrivilegioViewSet(viewsets.ModelViewSet):
 class CuotaViewSet(viewsets.ModelViewSet):
     queryset = Cuota.objects.all()
     serializer_class = CuotaSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        queryset = Cuota.objects.all()
-        # Filtros opcionales por query params
-        unidad_id = self.request.query_params.get('unidad_id', None)
-        if unidad_id is not None:
-            queryset = queryset.filter(unidad_habitacional_id=unidad_id)
-        return queryset
+    permission_classes = [IsAuthenticated, TienePrivilegio]
+    
+    def get_privilegio_requerido(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return 'fees.view'
+        elif self.action == 'create':
+            return 'fees.create'
+        elif self.action == 'update' or self.action == 'partial_update':
+            return 'fees.edit'
+        elif self.action == 'destroy':
+            return 'fees.delete'
+        return None
+        
+    def get_permissions(self):
+        self.privilegio_requerido = self.get_privilegio_requerido()
+        return super().get_permissions()

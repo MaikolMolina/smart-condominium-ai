@@ -21,6 +21,7 @@ import {
   Add as AddIcon
 } from '@mui/icons-material';
 import { privilegeService } from '../../services/privilegeService';
+import { usePrivileges } from '../../hooks/usePrivileges';
 
 const PrivilegeList = () => {
   const [privileges, setPrivileges] = useState([]);
@@ -32,6 +33,7 @@ const PrivilegeList = () => {
     codigo: ''
   });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const { tienePrivilegio } = usePrivileges();
 
   const showSnackbar = useCallback((message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -122,13 +124,15 @@ const PrivilegeList = () => {
         <Typography variant="h4" gutterBottom>
           Gestión de Privilegios
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-        >
-          Nuevo Privilegio
-        </Button>
+        {tienePrivilegio('privileges.create') && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialog()}
+          >
+            Nuevo Privilegio
+          </Button>
+        )}
       </Box>
 
       <Grid container spacing={3}>
@@ -149,20 +153,24 @@ const PrivilegeList = () => {
                     </Typography>
                   </Box>
                   <Box>
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => handleOpenDialog(privilege)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDelete(privilege.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    {tienePrivilegio('privileges.edit') && (
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleOpenDialog(privilege)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
+                    {tienePrivilegio('privileges.delete') && (
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(privilege.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Box>
                 </Box>
               </CardContent>
@@ -171,49 +179,51 @@ const PrivilegeList = () => {
         ))}
       </Grid>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {editingPrivilege ? 'Editar Privilegio' : 'Crear Privilegio'}
-        </DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-              <TextField
-                label="Nombre"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
-              <TextField
-                label="Código"
-                name="codigo"
-                value={formData.codigo}
-                onChange={handleChange}
-                required
-                fullWidth
-                helperText="Código único para identificar el privilegio en el sistema"
-              />
-              <TextField
-                label="Descripción"
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleChange}
-                multiline
-                rows={3}
-                fullWidth
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancelar</Button>
-            <Button type="submit" variant="contained">
-              {editingPrivilege ? 'Actualizar' : 'Crear'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      {tienePrivilegio('privileges.create') || tienePrivilegio('privileges.edit') ? (
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+          <DialogTitle>
+            {editingPrivilege ? 'Editar Privilegio' : 'Crear Privilegio'}
+          </DialogTitle>
+          <form onSubmit={handleSubmit}>
+            <DialogContent>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                <TextField
+                  label="Nombre"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                />
+                <TextField
+                  label="Código"
+                  name="codigo"
+                  value={formData.codigo}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  helperText="Código único para identificar el privilegio en el sistema"
+                />
+                <TextField
+                  label="Descripción"
+                  name="descripcion"
+                  value={formData.descripcion}
+                  onChange={handleChange}
+                  multiline
+                  rows={3}
+                  fullWidth
+                />
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cancelar</Button>
+              <Button type="submit" variant="contained">
+                {editingPrivilege ? 'Actualizar' : 'Crear'}
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+      ) : null}
 
       <Snackbar
         open={snackbar.open}

@@ -15,34 +15,26 @@ import {
   Typography,
   Avatar,
   Menu,
-  MenuItem
+  MenuItem,
+  Collapse,
+  Chip
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
-  People as PeopleIcon,
-  Lock as LockIcon,
-  Security as SecurityIcon,
-  ExitToApp as ExitToAppIcon,
-  Home as HomeIcon,
-  AttachMoney as MoneyIcon
+  ExpandLess as ExpandLessIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExitToApp as ExitToAppIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import { packagesConfig, getPackageByRoute } from '../../config/packages';
 
-const drawerWidth = 240;
-
-const menuItems = [
-  { text: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
-  { text: 'Usuarios', path: '/users', icon: <PeopleIcon /> },
-  { text: 'Unidades', path: '/unidades', icon: <HomeIcon /> },
-  { text: 'Roles', path: '/roles', icon: <LockIcon /> },
-  { text: 'Privilegios', path: '/privileges', icon: <SecurityIcon /> },
-  { text: 'Cuotas', path: '/cuotas', icon: <MoneyIcon /> },
-];
+const drawerWidth = 280;
 
 const Layout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [paquetesAbiertos, setPaquetesAbiertos] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, logout } = useAuth();
@@ -65,6 +57,23 @@ const Layout = ({ children }) => {
     navigate('/login');
   };
 
+  const togglePaquete = (paqueteId) => {
+    setPaquetesAbiertos(prev => ({
+      ...prev,
+      [paqueteId]: !prev[paqueteId]
+    }));
+  };
+
+  const handleNavigation = (ruta) => {
+    navigate(ruta);
+    // Cerrar el drawer en móviles después de navegar
+    if (window.innerWidth < 600) {
+      setMobileOpen(false);
+    }
+  };
+
+  const paqueteActual = getPackageByRoute(location.pathname);
+
   const drawer = (
     <div>
       <Toolbar>
@@ -72,18 +81,94 @@ const Layout = ({ children }) => {
           Smart Condo
         </Typography>
       </Toolbar>
+      
       <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => navigate(item.path)}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {/* Dashboard */}
+        <ListItem disablePadding>
+          <ListItemButton
+            selected={location.pathname === '/dashboard'}
+            onClick={() => handleNavigation('/dashboard')}
+          >
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" />
+          </ListItemButton>
+        </ListItem>
+
+        {/* Paquetes */}
+        {packagesConfig.map((paquete) => {
+          const casosUsoImplementados = paquete.casosUso.filter(cu => cu.implementado);
+          const estaAbierto = paquetesAbiertos[paquete.id] || false;
+          const tieneRutaActiva = paquete.casosUso.some(cu => cu.ruta === location.pathname);
+
+          return (
+            <React.Fragment key={paquete.id}>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => togglePaquete(paquete.id)}
+                  selected={tieneRutaActiva}
+                >
+                  <ListItemIcon>
+                    {(() => {
+                      switch(paquete.icono) {
+                        case 'people': return <DashboardIcon />;
+                        case 'attach_money': return <DashboardIcon />;
+                        case 'security': return <DashboardIcon />;
+                        case 'notifications': return <DashboardIcon />;
+                        default: return <DashboardIcon />;
+                      }
+                    })()}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                          {paquete.nombre}
+                        </Typography>
+                        <Chip 
+                          label={casosUsoImplementados.length}
+                          size="small"
+                          color={casosUsoImplementados.length === paquete.casosUso.length ? 'success' : 'primary'}
+                        />
+                      </Box>
+                    } 
+                  />
+                  {estaAbierto ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
+              </ListItem>
+              
+              <Collapse in={estaAbierto} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {paquete.casosUso.map((casoUso) => (
+                    <ListItemButton
+                      key={casoUso.id}
+                      sx={{ pl: 4 }}
+                      selected={location.pathname === casoUso.ruta}
+                      onClick={() => handleNavigation(casoUso.ruta)}
+                      disabled={!casoUso.implementado}
+                    >
+                      <ListItemText 
+                        primary={
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              opacity: casoUso.implementado ? 1 : 0.5,
+                              fontStyle: casoUso.implementado ? 'normal' : 'italic'
+                            }}
+                          >
+                            {casoUso.nombre}
+                            {!casoUso.implementado && ' (Próximamente)'}
+                          </Typography>
+                        } 
+                      />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Collapse>
+            </React.Fragment>
+          );
+        })}
       </List>
     </div>
   );
@@ -109,7 +194,7 @@ const Layout = ({ children }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
+            {paqueteActual ? `${paqueteActual.nombre} - ${paqueteActual.casosUso.find(cu => cu.ruta === location.pathname)?.nombre || ''}` : 'Smart Condominium'}
           </Typography>
           <div>
             <IconButton

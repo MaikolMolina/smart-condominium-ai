@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material';
 import { roleService } from '../../services/roleService';
 import { privilegeService } from '../../services/privilegeService';
+import { usePrivileges } from '../../hooks/usePrivileges';
 
 const RoleList = () => {
   const [roles, setRoles] = useState([]);
@@ -38,6 +39,7 @@ const RoleList = () => {
     descripcion: ''
   });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const { tienePrivilegio } = usePrivileges();
 
   const showSnackbar = useCallback((message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -106,6 +108,8 @@ const RoleList = () => {
   };
 
   const handleOpenPrivilegeDialog = (role) => {
+    if (!tienePrivilegio('roles.edit')) return;
+    
     setSelectedRole(role);
     if (!rolePrivileges[role.id]) {
       loadRolePrivileges(role.id);
@@ -189,13 +193,15 @@ const RoleList = () => {
         <Typography variant="h4" gutterBottom>
           Gestión de Roles
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-        >
-          Nuevo Rol
-        </Button>
+        {tienePrivilegio('roles.create') && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialog()}
+          >
+            Nuevo Rol
+          </Button>
+        )}
       </Box>
 
       <Grid container spacing={3}>
@@ -213,71 +219,79 @@ const RoleList = () => {
                     </Typography>
                   </Box>
                   <Box>
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => handleOpenDialog(role)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDelete(role.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    {tienePrivilegio('roles.edit') && (
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleOpenDialog(role)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
+                    {tienePrivilegio('roles.delete') && (
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(role.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Box>
                 </Box>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<SecurityIcon />}
-                  onClick={() => handleOpenPrivilegeDialog(role)}
-                  sx={{ mt: 1 }}
-                >
-                  Gestionar Privilegios
-                </Button>
+                {tienePrivilegio('roles.edit') && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<SecurityIcon />}
+                    onClick={() => handleOpenPrivilegeDialog(role)}
+                    sx={{ mt: 1 }}
+                  >
+                    Gestionar Privilegios
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {editingRole ? 'Editar Rol' : 'Crear Rol'}
-        </DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-              <TextField
-                label="Nombre"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
-              <TextField
-                label="Descripción"
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleChange}
-                multiline
-                rows={3}
-                fullWidth
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancelar</Button>
-            <Button type="submit" variant="contained">
-              {editingRole ? 'Actualizar' : 'Crear'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      {tienePrivilegio('roles.create') || tienePrivilegio('roles.edit') ? (
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+          <DialogTitle>
+            {editingRole ? 'Editar Rol' : 'Crear Rol'}
+          </DialogTitle>
+          <form onSubmit={handleSubmit}>
+            <DialogContent>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                <TextField
+                  label="Nombre"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                />
+                <TextField
+                  label="Descripción"
+                  name="descripcion"
+                  value={formData.descripcion}
+                  onChange={handleChange}
+                  multiline
+                  rows={3}
+                  fullWidth
+                />
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cancelar</Button>
+              <Button type="submit" variant="contained">
+                {editingRole ? 'Actualizar' : 'Crear'}
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+      ) : null}
 
       <Dialog 
         open={openPrivilegeDialog} 

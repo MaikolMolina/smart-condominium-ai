@@ -7,14 +7,27 @@ class UnidadHabitacionalSerializer(serializers.ModelSerializer):
         model = UnidadHabitacional
         fields = '__all__'
 
+class PrivilegioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Privilegio
+        fields = '__all__'
+
+class RolSerializer(serializers.ModelSerializer):
+    privilegios = PrivilegioSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Rol
+        fields = '__all__'
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     unidad_habitacional_info = UnidadHabitacionalSerializer(source='unidad_habitacional', read_only=True)
+    rol_info = RolSerializer(source='rol', read_only=True)  # Nuevo campo para información del rol
     
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'ci', 
-                 'telefono', 'tipo_usuario', 'unidad_habitacional', 'unidad_habitacional_info', 'password')
+                 'telefono', 'rol', 'rol_info', 'unidad_habitacional', 'unidad_habitacional_info', 'password', 'is_superuser')
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -47,18 +60,6 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('Debe proporcionar username y password')
         
         return data
-
-class PrivilegioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Privilegio
-        fields = '__all__'
-
-class RolSerializer(serializers.ModelSerializer):
-    privilegios = PrivilegioSerializer(many=True, read_only=True)
-    
-    class Meta:
-        model = Rol
-        fields = '__all__'
 
 class RolPrivilegioSerializer(serializers.ModelSerializer):
     class Meta:

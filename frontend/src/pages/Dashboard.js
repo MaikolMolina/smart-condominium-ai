@@ -1,113 +1,182 @@
 import React from 'react';
 import {
   Grid,
-  Paper,
+  Card,
+  CardContent,
+  CardActions,
   Typography,
   Box,
-  Card,
-  CardContent
+  Button,
+  Chip
 } from '@mui/material';
 import {
   People as PeopleIcon,
-  Lock as LockIcon,
+  AttachMoney as MoneyIcon,
   Security as SecurityIcon,
-  Home as HomeIcon,
-  AttachMoney as MoneyIcon
+  Notifications as NotificationsIcon,
+  ArrowForward as ArrowForwardIcon
 } from '@mui/icons-material';
-import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { packagesConfig } from '../config/packages';
 
 const Dashboard = () => {
-  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  const iconos = {
+    people: <PeopleIcon sx={{ fontSize: 40 }} />,
+    attach_money: <MoneyIcon sx={{ fontSize: 40 }} />,
+    security: <SecurityIcon sx={{ fontSize: 40 }} />,
+    notifications: <NotificationsIcon sx={{ fontSize: 40 }} />
+  };
+
+  const getColorPorPaquete = (paqueteId) => {
+    const colores = {
+      'identidad-unidades': 'primary',
+      'finanzas-cobranza': 'secondary',
+      'ia-seguridad': 'error',
+      'operaciones-notificaciones': 'success'
+    };
+    return colores[paqueteId] || 'default';
+  };
+
+  const handleVerPaquete = (paquete) => {
+    // Navegar al primer caso de uso implementado del paquete, o al primero disponible
+    const casoImplementado = paquete.casosUso.find(cu => cu.implementado);
+    if (casoImplementado) {
+      navigate(casoImplementado.ruta);
+    } else if (paquete.casosUso.length > 0) {
+      navigate(paquete.casosUso[0].ruta);
+    }
+  };
+
+  const getCasosUsoImplementadosCount = (paquete) => {
+    return paquete.casosUso.filter(cu => cu.implementado).length;
+  };
 
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
-        Dashboard
+        Dashboard - Smart Condominium
       </Typography>
-      <Typography variant="subtitle1" gutterBottom>
-        Bienvenido, {currentUser?.first_name} {currentUser?.last_name}
+      <Typography variant="subtitle1" gutterBottom sx={{ mb: 4 }}>
+        Sistema integral de gestión de condominios
       </Typography>
 
-      <Grid container spacing={3} sx={{ mt: 2 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <PeopleIcon color="primary" sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h5">Usuarios</Typography>
-                  <Typography variant="body2">Gestión de usuarios del sistema</Typography>
+      <Grid container spacing={3}>
+        {packagesConfig.map((paquete) => (
+          <Grid item xs={12} md={6} key={paquete.id}>
+            <Card 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6
+                }
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box sx={{ color: `${getColorPorPaquete(paquete.id)}.main`, mr: 2 }}>
+                    {iconos[paquete.icono]}
+                  </Box>
+                  <Box>
+                    <Typography variant="h5" component="h2">
+                      {paquete.nombre}
+                    </Typography>
+                    <Chip 
+                      label={`${getCasosUsoImplementadosCount(paquete)}/${paquete.casosUso.length} implementados`}
+                      size="small"
+                      color={getCasosUsoImplementadosCount(paquete) === paquete.casosUso.length ? 'success' : 'warning'}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <LockIcon color="secondary" sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h5">Roles</Typography>
-                  <Typography variant="body2">Gestión de roles de usuario</Typography>
+                
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Casos de uso incluidos:
+                </Typography>
+                
+                <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
+                  {paquete.casosUso.map((casoUso) => (
+                    <Box 
+                      key={casoUso.id}
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        mb: 1,
+                        opacity: casoUso.implementado ? 1 : 0.6
+                      }}
+                    >
+                      <Chip 
+                        label={casoUso.id.toUpperCase()}
+                        size="small"
+                        color={casoUso.implementado ? 'primary' : 'default'}
+                        variant={casoUso.implementado ? 'filled' : 'outlined'}
+                      />
+                      <Typography variant="body2" sx={{ ml: 1 }}>
+                        {casoUso.nombre}
+                        {!casoUso.implementado && ' (En desarrollo)'}
+                      </Typography>
+                    </Box>
+                  ))}
                 </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={4}>
-                  <Card>
-                    <CardContent>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <SecurityIcon color="success" sx={{ fontSize: 40, mr: 2 }} />
-                        <Box>
-                          <Typography variant="h5">Privilegios</Typography>
-                          <Typography variant="body2">Gestión de permisos del sistema</Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <HomeIcon color="info" sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h5">Unidades</Typography>
-                  <Typography variant="body2">Gestión de unidades habitacionales</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+              </CardContent>
+              
+              <CardActions>
+                <Button 
+                  size="small" 
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => handleVerPaquete(paquete)}
+                  disabled={getCasosUsoImplementadosCount(paquete) === 0}
+                >
+                  Acceder al Paquete
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <MoneyIcon color="secondary" sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h5">Cuotas</Typography>
-                  <Typography variant="body2">Gestión de cuotas y expensas</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-      <Paper sx={{ p: 3, mt: 3 }}>
+      {/* Resumen de Progreso */}
+      <Card sx={{ mt: 4, p: 3 }}>
         <Typography variant="h6" gutterBottom>
-          Resumen del Sistema
+          Resumen de Implementación
         </Typography>
-        <Typography variant="body1">
-          Esta es la aplicación de gestión para condominios Smart Condominium. 
-          Desde aquí puedes administrar usuarios, roles y privilegios del sistema.
-        </Typography>
-      </Paper>
+        <Grid container spacing={2}>
+          {packagesConfig.map((paquete) => {
+            const implementados = getCasosUsoImplementadosCount(paquete);
+            const total = paquete.casosUso.length;
+            const porcentaje = Math.round((implementados / total) * 100);
+            
+            return (
+              <Grid item xs={12} sm={6} md={3} key={paquete.id}>
+                <Box>
+                  <Typography variant="body2" gutterBottom>
+                    {paquete.nombre}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ width: '100%', mr: 1 }}>
+                      <Box 
+                        sx={{ 
+                          width: `${porcentaje}%`, 
+                          height: 8, 
+                          backgroundColor: 'primary.main',
+                          borderRadius: 4
+                        }} 
+                      />
+                    </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {porcentaje}%
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Card>
     </Box>
   );
 };

@@ -11,6 +11,15 @@ class UnidadHabitacional(models.Model):
 
     def __str__(self):
         return f"{self.torre or ''} - {self.piso or ''} - {self.numero}"
+    
+class Rol(models.Model):
+    nombre = models.CharField(max_length=50)
+    descripcion = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.nombre
 
 class User(AbstractUser):
     TIPO_USUARIO = [
@@ -23,20 +32,12 @@ class User(AbstractUser):
     
     ci = models.CharField(max_length=20, unique=True)
     telefono = models.CharField(max_length=20)
-    tipo_usuario = models.CharField(max_length=20, choices=TIPO_USUARIO)
+    rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuarios')
     unidad_habitacional = models.ForeignKey(UnidadHabitacional, on_delete=models.SET_NULL, null=True, blank=True)
     
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.ci}"
 
-class Rol(models.Model):
-    nombre = models.CharField(max_length=50)
-    descripcion = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.nombre
 
 class Privilegio(models.Model):
     nombre = models.CharField(max_length=50)

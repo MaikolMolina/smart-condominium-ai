@@ -19,9 +19,10 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
-  Home as HomeIcon
+  //Home as HomeIcon
 } from '@mui/icons-material';
 import { unidadService } from '../../services/unidadService';
+import { usePrivileges } from '../../hooks/usePrivileges';
 
 const UnidadList = () => {
   const [unidades, setUnidades] = useState([]);
@@ -34,6 +35,7 @@ const UnidadList = () => {
     metraje: ''
   });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const { tienePrivilegio } = usePrivileges();
 
   const showSnackbar = useCallback((message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -126,13 +128,15 @@ const UnidadList = () => {
         <Typography variant="h4" gutterBottom>
           Gestión de Unidades Habitacionales
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-        >
-          Nueva Unidad
-        </Button>
+        {tienePrivilegio('units.create') && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialog()}
+          >
+            Nueva Unidad
+          </Button>
+        )}
       </Box>
 
       <Grid container spacing={3}>
@@ -153,20 +157,24 @@ const UnidadList = () => {
                     </Typography>
                   </Box>
                   <Box>
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => handleOpenDialog(unidad)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDelete(unidad.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    {tienePrivilegio('units.edit') && (
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleOpenDialog(unidad)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
+                    {tienePrivilegio('units.delete') && (
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(unidad.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Box>
                 </Box>
               </CardContent>
@@ -175,55 +183,57 @@ const UnidadList = () => {
         ))}
       </Grid>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {editingUnidad ? 'Editar Unidad' : 'Crear Unidad'}
-        </DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-              <TextField
-                label="Número"
-                name="numero"
-                value={formData.numero}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
-              <TextField
-                label="Torre"
-                name="torre"
-                value={formData.torre}
-                onChange={handleChange}
-                fullWidth
-              />
-              <TextField
-                label="Piso"
-                name="piso"
-                value={formData.piso}
-                onChange={handleChange}
-                fullWidth
-              />
-              <TextField
-                label="Metraje (m²)"
-                name="metraje"
-                type="number"
-                value={formData.metraje}
-                onChange={handleChange}
-                required
-                fullWidth
-                inputProps={{ step: "0.01" }}
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancelar</Button>
-            <Button type="submit" variant="contained">
-              {editingUnidad ? 'Actualizar' : 'Crear'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      {tienePrivilegio('units.create') || tienePrivilegio('units.edit') ? (
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+          <DialogTitle>
+            {editingUnidad ? 'Editar Unidad' : 'Crear Unidad'}
+          </DialogTitle>
+          <form onSubmit={handleSubmit}>
+            <DialogContent>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                <TextField
+                  label="Número"
+                  name="numero"
+                  value={formData.numero}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                />
+                <TextField
+                  label="Torre"
+                  name="torre"
+                  value={formData.torre}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <TextField
+                  label="Piso"
+                  name="piso"
+                  value={formData.piso}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <TextField
+                  label="Metraje (m²)"
+                  name="metraje"
+                  type="number"
+                  value={formData.metraje}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  inputProps={{ step: "0.01" }}
+                />
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cancelar</Button>
+              <Button type="submit" variant="contained">
+                {editingUnidad ? 'Actualizar' : 'Crear'}
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+      ) : null}
 
       <Snackbar
         open={snackbar.open}

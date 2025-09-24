@@ -9,6 +9,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userPrivileges, setUserPrivileges] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,6 +18,20 @@ export const AuthProvider = ({ children }) => {
       authService.getCurrentUser()
         .then(response => {
           setCurrentUser(response.data);
+          // Extraer todos los privilegios de los roles del usuario
+          const privileges = [];
+          if (response.data.roles) {
+            response.data.roles.forEach(role => {
+              if (role.privilegios) {
+                role.privilegios.forEach(privilege => {
+                  if (!privileges.includes(privilege.codigo)) {
+                    privileges.push(privilege.codigo);
+                  }
+                });
+              }
+            });
+          }
+          setUserPrivileges(privileges);
           setLoading(false);
         })
         .catch(error => {
@@ -39,6 +54,21 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('refresh_token', refresh);
       setCurrentUser(user);
       
+      // Extraer privilegios del usuario
+      const privileges = [];
+      if (user.roles) {
+        user.roles.forEach(role => {
+          if (role.privilegios) {
+            role.privilegios.forEach(privilege => {
+              if (!privileges.includes(privilege.codigo)) {
+                privileges.push(privilege.codigo);
+              }
+            });
+          }
+        });
+      }
+      setUserPrivileges(privileges);
+      
       return response;
     } catch (error) {
       throw error;
@@ -54,11 +84,13 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       setCurrentUser(null);
+      setUserPrivileges([]);
     }
   };
 
   const value = {
     currentUser,
+    userPrivileges,
     login,
     logout,
     isAuthenticated: !!currentUser
