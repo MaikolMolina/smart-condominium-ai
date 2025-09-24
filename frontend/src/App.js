@@ -25,7 +25,7 @@ import ReconocimientoVehiculos from './components/placeholders/ReconocimientoVeh
 import DeteccionAnomalias from './components/placeholders/DeteccionAnomalias';
 import RegistroVisitantes from './components/placeholders/RegistroVisitantes';
 import ReportesSeguridad from './components/placeholders/ReportesSeguridad';
-import GestionInvitados from './components/placeholders/GestionInvitados';
+import InvitadoList from './components/invitados/InvitadoList';
 import Avisos from './components/placeholders/Avisos';
 import TareasMantenimiento from './components/placeholders/TareasMantenimiento';
 import ReportesMantenimiento from './components/placeholders/ReportesMantenimiento';
@@ -180,7 +180,7 @@ function AppRoutes() {
       <Route path="/gestion-invitados" element={
         <ProtectedRoute>
           <Layout>
-            <GestionInvitados />
+            <InvitadoList />
           </Layout>
         </ProtectedRoute>
       } />

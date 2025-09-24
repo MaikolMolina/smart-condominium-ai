@@ -88,3 +88,42 @@ class Cuota(models.Model):
 
     class Meta:
         ordering = ['-fecha_emision']
+
+class Invitado(models.Model):
+    TIPO_EVENTO_CHOICES = [
+        ('cumpleanos', 'Cumpleaños'),
+        ('reunion', 'Reunión'),
+        ('fiesta', 'Fiesta'),
+        ('otro', 'Otro'),
+    ]
+    
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('aprobado', 'Aprobado'),
+        ('rechazado', 'Rechazado'),
+    ]
+
+    residente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitados')
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+    ci = models.CharField(max_length=20, verbose_name='Cédula de Identidad')
+    email = models.EmailField(blank=True, null=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+    tipo_evento = models.CharField(max_length=20, choices=TIPO_EVENTO_CHOICES, default='reunion')
+    descripcion_evento = models.TextField(blank=True, null=True)
+    fecha_evento = models.DateField()
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    numero_invitados = models.PositiveIntegerField(default=1)
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
+    observaciones = models.TextField(blank=True, null=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido} - {self.fecha_evento}"
+
+    class Meta:
+        ordering = ['-creado_en']
+        verbose_name = 'Invitado'
+        verbose_name_plural = 'Invitados'

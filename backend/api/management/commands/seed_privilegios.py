@@ -35,6 +35,12 @@ class Command(BaseCommand):
             {'nombre': 'Crear Cuotas', 'codigo': 'fees.create', 'descripcion': 'Permite crear nuevas cuotas'},
             {'nombre': 'Editar Cuotas', 'codigo': 'fees.edit', 'descripcion': 'Permite editar cuotas existentes'},
             {'nombre': 'Eliminar Cuotas', 'codigo': 'fees.delete', 'descripcion': 'Permite eliminar cuotas'},
+
+            {'nombre': 'Ver Invitados', 'codigo': 'guests.view', 'descripcion': 'Permite ver la lista de invitados'},
+            {'nombre': 'Crear Invitados', 'codigo': 'guests.create', 'descripcion': 'Permite crear nuevos invitados'},
+            {'nombre': 'Editar Invitados', 'codigo': 'guests.edit', 'descripcion': 'Permite editar invitados existentes'},
+            {'nombre': 'Eliminar Invitados', 'codigo': 'guests.delete', 'descripcion': 'Permite eliminar invitados'},
+            {'nombre': 'Aprobar Invitados', 'codigo': 'guests.approve', 'descripcion': 'Permite aprobar/rechazar invitados'},
         ]
 
         for priv_data in privilegios:

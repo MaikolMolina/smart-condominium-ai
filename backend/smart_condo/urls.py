@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from api.views import (
     AuthViewSet, UserViewSet, UnidadHabitacionalViewSet, 
-    RolViewSet, PrivilegioViewSet, RolPrivilegioViewSet, CuotaViewSet
+    RolViewSet, PrivilegioViewSet, RolPrivilegioViewSet, CuotaViewSet, InvitadoViewSet
 )
 
 router = DefaultRouter()
@@ -14,6 +14,8 @@ router.register(r'roles', RolViewSet)
 router.register(r'privilegios', PrivilegioViewSet)
 router.register(r'rol-privilegios', RolPrivilegioViewSet, basename='rolprivilegio')
 router.register(r'cuotas', CuotaViewSet)
+router.register(r'invitados', InvitadoViewSet)
+
 
 
 urlpatterns = [

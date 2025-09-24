@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import login
-from .models import User, UnidadHabitacional, Rol, Privilegio, RolPrivilegio, Cuota
+from .models import User, UnidadHabitacional, Rol, Privilegio, RolPrivilegio, Cuota, Invitado
 from .serializers import (UserSerializer, LoginSerializer, 
                          UnidadHabitacionalSerializer, RolSerializer, 
-                         PrivilegioSerializer, RolPrivilegioSerializer, CuotaSerializer)
+                         PrivilegioSerializer, RolPrivilegioSerializer, CuotaSerializer, InvitadoSerializer)
 from .permissions import TienePrivilegio
 
 
@@ -192,3 +192,79 @@ class CuotaViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         self.privilegio_requerido = self.get_privilegio_requerido()
         return super().get_permissions()
+    
+class InvitadoViewSet(viewsets.ModelViewSet):
+    queryset = Invitado.objects.all()
+    serializer_class = InvitadoSerializer
+    permission_classes = [IsAuthenticated, TienePrivilegio]
+    
+    def get_privilegio_requerido(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return 'guests.view'
+        elif self.action == 'create':
+            return 'guests.create'
+        elif self.action == 'update' or self.action == 'partial_update':
+            return 'guests.edit'
+        elif self.action == 'destroy':
+            return 'guests.delete'
+        return None
+        
+    def get_permissions(self):
+        self.privilegio_requerido = self.get_privilegio_requerido()
+        return super().get_permissions()
+
+    def get_queryset(self):
+        queryset = Invitado.objects.all()
+        
+        # Si el usuario no es administrador, solo puede ver sus propios invitados
+        if not self.request.user.is_superuser:
+            queryset = queryset.filter(residente=self.request.user)
+        
+        # Filtros opcionales
+        estado = self.request.query_params.get('estado', None)
+        if estado is not None:
+            queryset = queryset.filter(estado=estado)
+            
+        fecha_desde = self.request.query_params.get('fecha_desde', None)
+        if fecha_desde is not None:
+            queryset = queryset.filter(fecha_evento__gte=fecha_desde)
+            
+        fecha_hasta = self.request.query_params.get('fecha_hasta', None)
+        if fecha_hasta is not None:
+            queryset = queryset.filter(fecha_evento__lte=fecha_hasta)
+            
+        return queryset
+
+    def perform_create(self, serializer):
+        # Asignar automáticamente el residente actual al crear un invitado
+        serializer.save(residente=self.request.user)
+        
+
+    @action(detail=True, methods=['post'])
+    def aprobar(self, request, pk=None):
+        if not request.user.is_superuser:
+            return Response({'error': 'Solo los administradores pueden aprobar invitados'}, 
+                          status=status.HTTP_403_FORBIDDEN)
+        
+        invitado = self.get_object()
+        invitado.estado = 'aprobado'
+        invitado.save()
+        
+        serializer = self.get_serializer(invitado)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def rechazar(self, request, pk=None):
+        if not request.user.is_superuser:
+            return Response({'error': 'Solo los administradores pueden rechazar invitados'}, 
+                          status=status.HTTP_403_FORBIDDEN)
+        
+        invitado = self.get_object()
+        observaciones = request.data.get('observaciones', '')
+        
+        invitado.estado = 'rechazado'
+        invitado.observaciones = observaciones
+        invitado.save()
+        
+        serializer = self.get_serializer(invitado)
+        return Response(serializer.data)

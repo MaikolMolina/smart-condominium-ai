@@ -37,7 +37,7 @@ export const packagesConfig = [
       { id: 'cu16', nombre: 'Detección de Anomalías', ruta: '/deteccion-anomalias', componente: 'DeteccionAnomalias', implementado: false },
       { id: 'cu17', nombre: 'Registro de Visitantes', ruta: '/registro-visitantes', componente: 'RegistroVisitantes', implementado: false },
       { id: 'cu20', nombre: 'Generar Reporte de Seguridad', ruta: '/reportes-seguridad', componente: 'ReportesSeguridad', implementado: false },
-      { id: 'cu25', nombre: 'Gestión de Invitados', ruta: '/gestion-invitados', componente: 'GestionInvitados', implementado: false }
+      { id: 'cu25', nombre: 'Gestión de Invitados', ruta: '/gestion-invitados', componente: 'InvitadoList', implementado: true  }
     ]
   },
   {

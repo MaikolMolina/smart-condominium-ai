@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, UnidadHabitacional, Rol, Privilegio, RolPrivilegio, Cuota
+from .models import User, UnidadHabitacional, Rol, Privilegio, RolPrivilegio, Cuota, Invitado
+from django.utils import timezone
+
 
 class UnidadHabitacionalSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,3 +74,21 @@ class CuotaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cuota
         fields = '__all__'
+
+class InvitadoSerializer(serializers.ModelSerializer):
+    residente_info = UserSerializer(source='residente', read_only=True)
+    residente = serializers.PrimaryKeyRelatedField(read_only=True)
+    
+    class Meta:
+        model = Invitado
+        fields = '__all__'
+    
+    def validate_fecha_evento(self, value):
+        if value < timezone.now().date():
+            raise serializers.ValidationError("La fecha del evento no puede ser en el pasado")
+        return value
+    
+    def validate(self, data):
+        if data['hora_inicio'] >= data['hora_fin']:
+            raise serializers.ValidationError("La hora de inicio debe ser anterior a la hora de fin")
+        return data
