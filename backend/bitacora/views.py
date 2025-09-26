@@ -1,6 +1,6 @@
 # backend/bitacora/views.py
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
@@ -18,7 +18,8 @@ class BitacoraPagination(PageNumberPagination):
 class BitacoraViewSet(ReadOnlyModelViewSet):
     queryset = Bitacora.objects.all().order_by("-fecha")
     serializer_class = BitacoraSerializer
-    permission_classes = [IsAuthenticated]
+    # Solo usuarios autenticados que además sean admin (is_staff)
+    permission_classes = [IsAuthenticated, IsAdminUser]
     pagination_class = BitacoraPagination
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]

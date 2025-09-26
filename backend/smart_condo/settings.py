@@ -15,9 +15,13 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# CU10 por si acaso
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -47,6 +51,7 @@ INSTALLED_APPS = [
     "bitacora",
     "django_filters",
     "areas",
+    "avisos",
 ]
 
 MIDDLEWARE = [
@@ -164,3 +169,6 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# parte de CU10
+AVISOS_UNIDAD_MODEL = "api.UnidadHabitacional"

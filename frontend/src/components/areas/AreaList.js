@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import AreaService from "../../services/areaService";
-// Si no tienes el hook, este fallback lo hace opcional
+
 import { usePrivileges as _usePrivileges } from "../../hooks/usePrivileges";
 
 const usePrivileges = _usePrivileges ?? (() => ({ tienePrivilegio: () => true }));
@@ -45,7 +45,7 @@ const EMPTY = {
   activo: true
 };
 
-// helper para mostrar descripción truncada con tooltip
+
 const truncate = (s, n = 80) => (s ? (s.length > n ? s.slice(0, n) + "…" : s) : "—");
 
 export default function AreaList() {

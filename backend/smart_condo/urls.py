@@ -12,6 +12,10 @@ from api.views import (
     InvitadoViewSet,
 )
 
+# cu10
+from django.conf import settings
+from django.conf.urls.static import static
+
 router = DefaultRouter()
 router.register(r"auth", AuthViewSet, basename="auth")
 router.register(r"users", UserViewSet)
@@ -28,4 +32,8 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("api/", include("bitacora.urls")),
     path("api/", include("areas.urls")),
+    path("api/", include("avisos.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,22 +1,22 @@
-import React from 'react';
 import {
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
+  ArrowForward as ArrowForwardIcon,
+  AttachMoney as MoneyIcon,
+  Notifications as NotificationsIcon,
+  People as PeopleIcon,
+  Security as SecurityIcon
+} from '@mui/icons-material';
+import {
   Box,
   Button,
-  Chip
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Grid,
+  Typography
 } from '@mui/material';
-import {
-  People as PeopleIcon,
-  AttachMoney as MoneyIcon,
-  Security as SecurityIcon,
-  Notifications as NotificationsIcon,
-  ArrowForward as ArrowForwardIcon
-} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import AvisosWidget from '../components/common/AvisosWidget';
 import { packagesConfig } from '../config/packages';
 
 const Dashboard = () => {
@@ -62,6 +62,15 @@ const Dashboard = () => {
         Sistema integral de gestión de condominios
       </Typography>
 
+      {/* Row de widgets superiores */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={4}>
+          <AvisosWidget maxItems={5} />
+        </Grid>
+        {/* Puedes añadir más widgets aquí en el futuro */}
+      </Grid>
+
+      {/* Paquetes */}
       <Grid container spacing={3}>
         {packagesConfig.map((paquete) => (
           <Grid item xs={12} md={6} key={paquete.id}>

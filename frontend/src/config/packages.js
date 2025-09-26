@@ -45,7 +45,7 @@ export const packagesConfig = [
     nombre: 'Operaciones & Notificaciones',
     icono: 'notifications',
     casosUso: [
-      { id: 'cu10', nombre: 'Gestión de Avisos', ruta: '/avisos', componente: 'Avisos', implementado: false },
+      { id: 'cu10', nombre: 'Gestión de Avisos', ruta: '/avisos', componente: 'Avisos', implementado: true },
       { id: 'cu18', nombre: 'Asignación de Tareas de Mantenimiento', ruta: '/tareas-mantenimiento', componente: 'TareasMantenimiento', implementado: false },
       { id: 'cu22', nombre: 'Generar Reporte de Mantenimiento', ruta: '/reportes-mantenimiento', componente: 'ReportesMantenimiento', implementado: false },
       { id: 'cu23', nombre: 'Enviar Notificaciones', ruta: '/notificaciones', componente: 'Notificaciones', implementado: false },

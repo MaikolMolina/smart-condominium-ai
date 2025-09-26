@@ -19,6 +19,9 @@ import AreaForm from './components/areas/AreaForm';
 import AreaList from './components/areas/AreaList';
 import ReservasList from './components/reservas/ReservasList';
 
+//CU10 por si acaso
+import AvisoList from './components/avisos/AvisoList';
+
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 function ProtectedRoute({ children }) {
@@ -167,6 +170,17 @@ function AppRoutes() {
           <ProtectedRoute>
             <Layout>
               <ReservasList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/avisos"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AvisoList />
             </Layout>
           </ProtectedRoute>
         }
