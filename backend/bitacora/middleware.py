@@ -1,3 +1,5 @@
+##bitacora / middleware.py
+
 from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
 from django.utils import timezone
@@ -53,7 +55,7 @@ class RequestBitacoraMiddleware(MiddlewareMixin):
         response = self.get_response(request)
 
         try:
-            verbose = getattr(settings, "BITACORA_VERBOSE", True)
+            verbose = getattr(settings, "BITACORA_VERBOSE", False)
 
             # si estamos en modo minimal y esta request no es relevante → no guardamos
             if not verbose and _debe_ignorar_minimal(request.path, request.method):

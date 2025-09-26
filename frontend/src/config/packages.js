@@ -49,7 +49,7 @@ export const packagesConfig = [
       { id: 'cu18', nombre: 'Asignación de Tareas de Mantenimiento', ruta: '/tareas-mantenimiento', componente: 'TareasMantenimiento', implementado: false },
       { id: 'cu22', nombre: 'Generar Reporte de Mantenimiento', ruta: '/reportes-mantenimiento', componente: 'ReportesMantenimiento', implementado: false },
       { id: 'cu23', nombre: 'Enviar Notificaciones', ruta: '/notificaciones', componente: 'Notificaciones', implementado: false },
-      { id: 'cu27', nombre: 'Configuración del Sistema', ruta: '/configuracion', componente: 'Configuracion', implementado: false },
+      { id: 'cu27', nombre: 'Registrar Bitacora', ruta: '/bitacora', componente: 'Configuracion', implementado: true },
       { id: 'cu11', nombre: 'Gestión de Áreas Comunes', ruta: '/areas-comunes', componente: 'AreasComunes', implementado: false },
       { id: 'cu21', nombre: 'Generar Reporte de Uso de Áreas', ruta: '/reportes-areas', componente: 'ReportesAreas', implementado: false }
     ]

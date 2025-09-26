@@ -1,3 +1,4 @@
+
 // src/components/bitacora/BitacoraList.js
 import { Clear as ClearIcon, Download as DownloadIcon, Sort as SortIcon } from '@mui/icons-material';
 import {
@@ -20,6 +21,10 @@ import {
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { useBitacora } from '../../hooks/useBitacora';
+
+
+// 🔧 NUEVO: helper para evaluar vacío
+//const isEmptyValue = (v) => v === null || v === undefined || v === "" || v === "-";
 
 // ---- util: debounce
 function useDebouncedValue(value, delay = 450) {

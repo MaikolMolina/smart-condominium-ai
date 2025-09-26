@@ -1,8 +1,13 @@
+// === imports unificados y sin duplicados ===
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import {
   AppBar,
+  Avatar,
   Box,
+  Chip,
+  Collapse,
   CssBaseline,
   Drawer,
   IconButton,
@@ -11,23 +16,23 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
-  Typography,
-  Avatar,
   Menu,
   MenuItem,
-  Collapse,
-  Chip
+  Toolbar,
+  Typography
 } from '@mui/material';
+
 import {
-  Menu as MenuIcon,
   Dashboard as DashboardIcon,
+  ExitToApp as ExitToAppIcon,
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
-  ExitToApp as ExitToAppIcon
+  Menu as MenuIcon
 } from '@mui/icons-material';
+
+import { getPackageByRoute, packagesConfig } from '../../config/packages';
 import { useAuth } from '../../contexts/AuthContext';
-import { packagesConfig, getPackageByRoute } from '../../config/packages';
+
 
 const drawerWidth = 280;
 
