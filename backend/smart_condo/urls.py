@@ -27,4 +27,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
     path("api/", include("bitacora.urls")),
+    path("api/", include("areas.urls")),
 ]

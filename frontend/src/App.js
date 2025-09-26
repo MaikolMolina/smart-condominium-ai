@@ -14,6 +14,11 @@ import RoleList from './components/roles/RoleList';
 import UnidadList from './components/unidades/UnidadList';
 import UserList from './components/users/UserList';
 
+// CU11 por si acaso
+import AreaForm from './components/areas/AreaForm';
+import AreaList from './components/areas/AreaList';
+import ReservasList from './components/reservas/ReservasList';
+
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 function ProtectedRoute({ children }) {
@@ -39,7 +44,7 @@ function AppRoutes() {
         }
       />
 
-      {/* === Rutas que faltaban (causaban No routes matched) === */}
+      {/* === Gestión de Usuarios/Roles/Privilegios === */}
       <Route
         path="/usuarios"
         element={
@@ -81,7 +86,7 @@ function AppRoutes() {
         }
       />
 
-      {/* Rutas que ya tenías */}
+      {/* === Unidades / Finanzas / Bitácora === */}
       <Route
         path="/unidades"
         element={
@@ -108,6 +113,60 @@ function AppRoutes() {
           <ProtectedRoute>
             <Layout>
               <BitacoraList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* === CU11 – Áreas Comunes & Reservas === */}
+      {/* Menú de paquetes: /areas-comunes */}
+      <Route
+        path="/areas-comunes"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AreaList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      {/* Alias directo: /areas */}
+      <Route
+        path="/areas"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AreaList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/areas/new"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AreaForm />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/areas/:id/edit"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AreaForm />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reservas"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <ReservasList />
             </Layout>
           </ProtectedRoute>
         }

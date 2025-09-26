@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "api",
     "bitacora",
     "django_filters",
+    "areas",
 ]
 
 MIDDLEWARE = [
