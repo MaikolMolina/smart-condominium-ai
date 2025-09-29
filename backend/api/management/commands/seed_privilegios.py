@@ -41,6 +41,13 @@ class Command(BaseCommand):
             {'nombre': 'Editar Invitados', 'codigo': 'guests.edit', 'descripcion': 'Permite editar invitados existentes'},
             {'nombre': 'Eliminar Invitados', 'codigo': 'guests.delete', 'descripcion': 'Permite eliminar invitados'},
             {'nombre': 'Aprobar Invitados', 'codigo': 'guests.approve', 'descripcion': 'Permite aprobar/rechazar invitados'},
+
+            {'nombre': 'Ver Reconocimiento Facial', 'codigo': 'facial.view', 'descripcion': 'Permite ver módulo de reconocimiento facial'},
+            {'nombre': 'Registrar Rostros', 'codigo': 'facial.create', 'descripcion': 'Permite registrar rostros de usuarios'},
+            {'nombre': 'Gestionar Rostros', 'codigo': 'facial.edit', 'descripcion': 'Permite gestionar rostros registrados'},
+            {'nombre': 'Eliminar Rostros', 'codigo': 'facial.delete', 'descripcion': 'Permite eliminar rostros'},
+            {'nombre': 'Ver Registros de Acceso', 'codigo': 'access.view', 'descripcion': 'Permite ver registros de acceso'},
+            {'nombre': 'Registrar Accesos', 'codigo': 'access.create', 'codigo': 'Permite registrar accesos'},
         ]
 
         for priv_data in privilegios:

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, UnidadHabitacional, Rol, Privilegio, RolPrivilegio, Cuota, Invitado
+from .models import User, UnidadHabitacional, Rol, Privilegio, RolPrivilegio, Cuota, Invitado, RostroUsuario, RegistroAcceso
 from django.utils import timezone
 
 
@@ -92,3 +92,17 @@ class InvitadoSerializer(serializers.ModelSerializer):
         if data['hora_inicio'] >= data['hora_fin']:
             raise serializers.ValidationError("La hora de inicio debe ser anterior a la hora de fin")
         return data
+    
+class RostroUsuarioSerializer(serializers.ModelSerializer):
+    usuario_info = UserSerializer(source='usuario', read_only=True)
+    
+    class Meta:
+        model = RostroUsuario
+        fields = '__all__'
+
+class RegistroAccesoSerializer(serializers.ModelSerializer):
+    usuario_info = UserSerializer(source='usuario', read_only=True)
+    
+    class Meta:
+        model = RegistroAcceso
+        fields = '__all__'

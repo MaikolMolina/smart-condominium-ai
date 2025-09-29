@@ -30,14 +30,17 @@ export const packagesConfig = [
     nombre: 'IA & Seguridad',
     icono: 'security',
     casosUso: [
-      { id: 'cu12', nombre: 'Monitorear Cámaras', ruta: '/camaras', componente: 'Camaras', implementado: false },
-      { id: 'cu13', nombre: 'Reconocimiento Facial', ruta: '/reconocimiento-facial', componente: 'ReconocimientoFacial', implementado: false },
+      { id: 'cu12', nombre: 'Monitorear Cámaras', ruta: '/reconocimiento-facial', componente: 'ReconocimientoTiempoReal', implementado: true },
+      { id: 'cu13', nombre: 'Monitor de Acceso Automático', ruta: '/monitor-acceso', componente: 'MonitorAccesoAutomatico', implementado: true },
       { id: 'cu14', nombre: 'Detectar Visitantes No Registrados', ruta: '/detectar-visitantes', componente: 'DetectarVisitantes', implementado: false },
       { id: 'cu15', nombre: 'Reconocer Vehículos', ruta: '/reconocimiento-vehiculos', componente: 'ReconocimientoVehiculos', implementado: false },
       { id: 'cu16', nombre: 'Detección de Anomalías', ruta: '/deteccion-anomalias', componente: 'DeteccionAnomalias', implementado: false },
       { id: 'cu17', nombre: 'Registro de Visitantes', ruta: '/registro-visitantes', componente: 'RegistroVisitantes', implementado: false },
       { id: 'cu20', nombre: 'Generar Reporte de Seguridad', ruta: '/reportes-seguridad', componente: 'ReportesSeguridad', implementado: false },
-      { id: 'cu25', nombre: 'Gestión de Invitados', ruta: '/gestion-invitados', componente: 'InvitadoList', implementado: true  }
+      { id: 'cu25', nombre: 'Gestión de Invitados', ruta: '/gestion-invitados', componente: 'InvitadoList', implementado: true  },
+      { id: 'cu28', nombre: 'Registro de Rostros', ruta: '/registro-rostros', componente: 'RegistroRostro', implementado: true },
+      { id: 'cu29', nombre: 'Gestión de Rostros', ruta: '/gestion-rostros', componente: 'GestionRostros', implementado: true },
+      { id: 'cu30', nombre: 'Panel de Monitoreo', ruta: '/panel-monitoreo', componente: 'PanelMonitoreo', implementado: true },
     ]
   },
   {

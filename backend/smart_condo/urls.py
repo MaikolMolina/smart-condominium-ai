@@ -10,6 +10,8 @@ from api.views import (
     RolPrivilegioViewSet,
     CuotaViewSet,
     InvitadoViewSet,
+    RostroUsuarioViewSet,
+    RegistroAccesoViewSet,
 )
 
 # cu10
@@ -25,6 +27,8 @@ router.register(r"privilegios", PrivilegioViewSet)
 router.register(r"rol-privilegios", RolPrivilegioViewSet, basename="rolprivilegio")
 router.register(r"cuotas", CuotaViewSet)
 router.register(r"invitados", InvitadoViewSet)
+router.register(r'rostros', RostroUsuarioViewSet)
+router.register(r'accesos', RegistroAccesoViewSet)
 
 
 urlpatterns = [
